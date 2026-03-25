@@ -1,12 +1,19 @@
 from requests import Session
 
-class ICNDB:
+class IcndDb:
     def __init__(self) -> None:
         self.api = "https://api.icndb.com"
         self.session = Session()
         self.session.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36"
         }
+
+    def _get(self, endpoint: str, params: dict = None) -> dict:
+        return self.session.get(
+            f"{self.api}{endpoint}", params=params, verify=False).json()
+
+    def _filter(self, data: dict) -> dict:
+        return {key: value for key, value in data.items() if value is not None}
 
     def get_random_joke(
             self,
@@ -15,30 +22,18 @@ class ICNDB:
             last_name: str = None,
             limit_to: str = "nerdy",
             exclude: str = None) -> dict:
-        params = {
+        params = self._filter({
             "firstName": first_name,
             "lastName": last_name,
             "exclude": exclude
-        }
-        filtered_params = {
-            key: value for key, value in params.items() if value is not None
-        }
-        return self.session.get(
-            f"{self.api}/jokes/random/{count}?limitTo=[{limit_to}]",
-            params=filtered_params,
-            verify=False).json()
+        })
+        return self._get(f"/jokes/random/{count}?limitTo=[{limit_to}]", params)
 
     def get_specific_joke(self, joke_id: int) -> dict:
-        return self.session.get(
-            f"{self.api}/jokes/{joke_id}", verify=False).json()
+        return self._get(f"/jokes/{joke_id}")
 
     def get_jokes_count(self) -> dict:
-        return self.session.get(
-            f"{self.api}/jokes/count", verify=False).json()
+        return self._get("/jokes/count")
 
     def get_joke_categories(self) -> dict:
-        return self.session.get(
-            f"{self.api}/categories", verify=False).json()
-
-    def get_all_jokes(self) -> dict:
-        return self.session.get(self.api, verify=False).json()
+        return self._get("/categories")
