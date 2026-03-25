@@ -1,6 +1,6 @@
 from requests import Session
 
-class IcndDb:
+class IcnDb:
     def __init__(self) -> None:
         self.api = "https://api.icndb.com"
         self.session = Session()
