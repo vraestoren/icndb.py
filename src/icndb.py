@@ -25,9 +25,10 @@ class IcnDb:
         params = self._filter({
             "firstName": first_name,
             "lastName": last_name,
-            "exclude": exclude
+            "exclude": exclude,
+            "limitTo": f"[{limit_to}]"
         })
-        return self._get(f"/jokes/random/{count}?limitTo=[{limit_to}]", params)
+        return self._get(f"/jokes/random/{count}", params)
 
     def get_specific_joke(self, joke_id: int) -> dict:
         return self._get(f"/jokes/{joke_id}")
